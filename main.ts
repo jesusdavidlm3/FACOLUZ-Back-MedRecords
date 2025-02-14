@@ -1,12 +1,12 @@
-import express from 'express'
-import cors from 'cors'
-import { createServer } from 'http'
-import jwt from 'jsonwebtoken'
-import * as db from './dbConnection.js'
-import * as tokenVerification from './tokenVerification.js'
+import express from "npm:express@4.18.2";
+import cors from 'npm:cors'
+import jwt from 'npm:jsonwebtoken'
+import * as db from './dbConnection.ts'
+import "jsr:@std/dotenv/load";
+import * as tokenVerification from './tokenVerification.ts'
 
-const port = process.env.PORT
-const secret = process.env.SECRET
+const port = Deno.env.get("PORT")
+const secret = Deno.env.get("SECRET")
 
 const app = express()
 app.use(cors())
@@ -41,7 +41,7 @@ app.post('/api/login', async (req, res) => {
 	}
 })
 
-const server = createServer(app)
-server.listen(port, () => {
-	console.log(`Su puerto es: ${process.env.PORT}`)
-})	
+app.listen(port, "0.0.0.0", () => {
+	console.log(`Puerto: ${port}`)
+})
+
