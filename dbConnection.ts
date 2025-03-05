@@ -42,6 +42,6 @@ async function execute(query: string, params?: object) {
 
 export async function login(data: t.loginData){
 	const {identification} = data
-	const res = await query('SELECT * FROM users WHERE identification = ?', [identification])
+	const res = await query('SELECT * FROM users WHERE id = ?', [identification])
 	return res
 }
