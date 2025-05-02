@@ -18,13 +18,14 @@ app.post('/api/login', async (req, res) => {
 	let dbResponse
 	try{
 		dbResponse = await db.login(req.body)
+		console.log(dbResponse)
 		if(dbResponse.length == 0){
 			res.status(404).send('Usuario no encontrado')
 		}else if(dbResponse[0].passwordSHA256 != passwordHash){
 			res.status(401).send('Contraseña Incorrecta')
 		}else if(dbResponse[0].active == false){
 			res.status(404).send('Este usuario se encuentra inactivo')
-		}else if(dbResponse[0].type != 1 || dbResponse[0].type != 2){
+		}else if((dbResponse[0].type != 1) && (dbResponse[0].type != 2)){
 			res.status(401).send('Usted no es un profesor o alumno')
 		}else{
 			const token = jwt.sign({
