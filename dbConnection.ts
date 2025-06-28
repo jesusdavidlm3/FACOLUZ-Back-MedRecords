@@ -45,3 +45,93 @@ export async function login(data: t.loginData){
 	const res = await query('SELECT * FROM users WHERE id = ?', [identification])
 	return res
 }
+
+export async function getDateList(requesterId:number) {
+	const res = await query("SELECT * FROM dates WHERE doctorId = ? AND status = 'Pendiente'", [requesterId])
+	return res
+}
+
+export async function getHistoryById(patientId:number){
+	const res = await query(`
+		SELECT * FROM patients
+		LEFT JOIN childHistories ON patients.id = childHistories.patientId
+		LEFT JOIN adultHistories ON patients.id = adultHistories.patientId
+		WHERE patient.id = ?
+	`, [patientId])
+	return res
+}
+
+export async function sendDateData(dateData: t.dateData) {
+	const id = crypto.randomUUID
+	const patientId = dateData.patientId
+    const consultationReason = dateData.consultationReason
+    const currentDisease = dateData.currentDisease
+    const dateTime = dateData.dateTime
+    const treatment = dateData.treatment
+    const systolicPresure = dateData.systolicPresure
+    const diastolicPresure = dateData.diastolicPresure
+    const BPM = dateData.BPM
+    const fisicConsistency = dateData.fisicConsistency
+    const physicalExamination = dateData.physicalExamination
+    const intraoralExamination = dateData.intraoralExamination
+    const gumEvaluation = dateData.gumEvaluation
+    const dentalDiagram = dateData.dentalDiagram
+    const childrenDentalDiagram = dateData.childrenDentalDiagram
+    const individualForecast = dateData.individualForecast
+    const generalForecast = dateData.generalForecast
+    const physicalTest = dateData.physicalTest
+    const oclusionExamination = dateData.oclusionExamination
+    const complementaryTest = dateData.complementaryTest
+    const generalObservations = dateData.generalObservations
+    const pulpVitality = dateData.pulpVitality
+
+	const _res = await execute(`
+		INSERT INTO consultations(
+			id,
+			patientId,
+			consultationReason,
+			currentDisease,
+			dateTime,
+			treatment,
+			systolicPresure,
+			diastolicPresure,
+			BPM,
+			fisicConsistency,
+			physicalExamination,
+			intraoralExamination,
+			gumEvaluation,
+			dentalDiagram,
+			childrenDentalDiagram,
+			individualForecast,
+			generalForecast,
+			physicalTest,
+			oclusionExamination,
+			complementaryTest,
+			generalObservations,
+			pulpVitality,
+		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ? ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, [
+		id,
+		patientId,
+		consultationReason,
+		currentDisease,
+		dateTime,
+		treatment,
+		systolicPresure,
+		diastolicPresure,
+		BPM,
+		fisicConsistency,
+		physicalExamination,
+		intraoralExamination,
+		gumEvaluation,
+		dentalDiagram,
+		childrenDentalDiagram,
+		individualForecast,
+		generalForecast,
+		physicalTest,
+		oclusionExamination,
+		complementaryTest,
+		generalObservations,
+		pulpVitality,
+	])
+}

@@ -42,6 +42,27 @@ app.post('/api/login', async (req, res) => {
 	}
 })
 
+app.get('/api/getDatesList',tokenVerification.forTeachOrStud , async(req, res) => {
+	try{
+		const tokenData = tokenVerification.getTokenInfo(req)
+		const dbResponse = await db.getDateList(tokenData.id)
+		res.status(200).send(dbResponse)
+	}catch(err){
+		console.log(err)
+		res.status(500).send(err)
+	}
+})
+
+app.get("/api/getHistory/:patientId", tokenVerification.forTeachOrStud, async(req, res) => {
+	try{
+		const tokenData = tokenVerification.getTokenInfo(req)
+		const dbResponse = await db.getHistoryById(tokenData.id)
+	}catch(err){
+		console.log(err)
+		res.status(500).send(err)
+	}
+})
+
 app.listen(port, "0.0.0.0", () => {
 	console.log(`Puerto: ${port}`)
 })

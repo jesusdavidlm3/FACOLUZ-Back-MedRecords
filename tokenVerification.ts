@@ -61,3 +61,9 @@ export function forStudyControl(req, res, next){
 		return res.status(401).send('Token no válido');
 	}
 }
+
+export function getTokenInfo(req) {
+	const token = req.headers.authorization.split(" ")[1]
+	const payload = jwt.verify(token, secret)
+	return payload
+}
