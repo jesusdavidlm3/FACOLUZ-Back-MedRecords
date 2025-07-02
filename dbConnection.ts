@@ -135,3 +135,68 @@ export async function sendDateData(dateData: t.dateData) {
 		pulpVitality,
 	])
 }
+
+export async function addDateReg(data:t.dateData) {
+	const _res = await execute(`
+		INSER INTO consultations(
+			id,
+			patientId,
+			consultationReason,
+			currentDisease,
+			dateTime,
+			treatment,
+			systolicPresure,
+			diastolicPresure,
+			BPM,
+			fisicConsistency,
+			physicalExamination,
+			intraoralExamination,
+			gumEvaluation,
+			dentalDiagram,
+			childrenDentalDiagram,
+			individualForecast,
+			generalForecast,
+			physicalTest,
+			oclusionExamination,
+			complementaryTest,
+			generalObservations,
+			pulpVitality,
+			pregnacy,
+			reactionToAnesthesia,
+			reactionToAnesthesiaDesc
+		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, )
+	`,[
+		data.dateId,
+		// data.patientId,
+		data.consultationReason,
+		data.currentDisease,
+		data.dateTime,
+		data.treatment,
+		data.systolicPresure,
+		data.diastolicPresure,
+		data.BPM,
+		data.fisicConsistency,
+		data.physicalExamination,
+		data.intraoralExamination,
+		data.gumEvaluation,
+		data.dentalDiagram,
+		data.childrenDentalDiagram,
+		data.individualForecast,
+		data.generalForecast,
+		data.physicalTest,
+		data.oclusionExamination,
+		data.complementaryTest,
+		data.generalObservations,
+		data.pulpVitality,
+		data.pregnacy,
+		data.reactionToAnesthesia,
+		data.reactionToAnesthesiaDesc])
+}
+
+export async function updateDentalDiagram(data: t.dentalDiagram) {
+	
+}
+
+export async function updateChildrenDentalDiagram(data: t.childrenDentalDiagram) {
+	
+}

@@ -10,7 +10,7 @@ export interface scheduleDate{
 }
 
 export interface dateData{
-    patientId: string,
+    dateId: string,
     consultationReason: string,
     currentDisease: string,
     dateTime: Date,
@@ -31,4 +31,15 @@ export interface dateData{
     complementaryTest: JSON,
     generalObservations: string,
     pulpVitality: JSON,
+    pregnacy: boolean,
+    reactionToAnesthesia: boolean,
+    reactionToAnesthesiaDesc: string
+}
+
+export interface dentalDiagram{
+    theeth: number[]
+}
+
+export interface childrenDentalDiagram{
+    theeth: number[]
 }

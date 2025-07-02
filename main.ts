@@ -57,9 +57,22 @@ app.get("/api/getHistory/:patientId", tokenVerification.forTeachOrStud, async(re
 	try{
 		const tokenData = tokenVerification.getTokenInfo(req)
 		const dbResponse = await db.getHistoryById(tokenData.id)
+		console.log(dbResponse)
 	}catch(err){
 		console.log(err)
 		res.status(500).send(err)
+	}
+})
+
+app.post('/api/finishDate', tokenVerification.forTeachOrStud, async(req, res) => {
+	try{
+		const dbResponse = await db.addDateReg(req.body)
+		console.log(dbResponse)
+		// ejecutar tambien las querys para actualizar datos y almacenar odontograma y otros datos cambiantes parcialmente
+		res.status(200).send("Registrado")
+	}catch(err){
+		console.log(err)
+		res.status(500).send("error del servidor")
 	}
 })
 
