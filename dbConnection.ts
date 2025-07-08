@@ -1,5 +1,5 @@
 import mariadb from 'npm:mariadb'
-import * as t from './interfaces.ts'
+import * as t from './structures/interfaces.ts'
 import "jsr:@std/dotenv/load";
 
 const db = mariadb.createPool({
@@ -62,28 +62,9 @@ export async function getHistoryById(patientId:number){
 }
 
 export async function sendDateData(dateData: t.dateData) {
-	const id = crypto.randomUUID
-	const patientId = dateData.patientId
-    const consultationReason = dateData.consultationReason
-    const currentDisease = dateData.currentDisease
-    const dateTime = dateData.dateTime
-    const treatment = dateData.treatment
-    const systolicPresure = dateData.systolicPresure
-    const diastolicPresure = dateData.diastolicPresure
-    const BPM = dateData.BPM
-    const fisicConsistency = dateData.fisicConsistency
-    const physicalExamination = dateData.physicalExamination
-    const intraoralExamination = dateData.intraoralExamination
-    const gumEvaluation = dateData.gumEvaluation
-    const dentalDiagram = dateData.dentalDiagram
-    const childrenDentalDiagram = dateData.childrenDentalDiagram
-    const individualForecast = dateData.individualForecast
-    const generalForecast = dateData.generalForecast
-    const physicalTest = dateData.physicalTest
-    const oclusionExamination = dateData.oclusionExamination
-    const complementaryTest = dateData.complementaryTest
-    const generalObservations = dateData.generalObservations
-    const pulpVitality = dateData.pulpVitality
+
+	const id = crypto.randomUUID()
+	const dateId = dateData.dateId //Determinar id del paciente con esto
 
 	const _res = await execute(`
 		INSERT INTO consultations(
@@ -91,106 +72,65 @@ export async function sendDateData(dateData: t.dateData) {
 			patientId,
 			consultationReason,
 			currentDisease,
-			dateTime,
 			treatment,
-			systolicPresure,
-			diastolicPresure,
-			BPM,
-			fisicConsistency,
+			bifosfonato,
+			bifosfonadoDescription,
+			reactionToAnesthesia,
+			reactionToAnesthesiaDesc,
+			alergy,
+			alergyDescription,
+			cancer,
+			pregnacy,
+			ailments,
+			bloodType,
+			proneToBleeding,
+			height,
+			weight,
+			complementaryTest,
+			sys,
+			dia,
+			bpm,
+			temp,
 			physicalExamination,
 			intraoralExamination,
 			gumEvaluation,
 			dentalDiagram,
 			childrenDentalDiagram,
-			individualForecast,
-			generalForecast,
-			physicalTest,
-			oclusionExamination,
-			complementaryTest,
-			generalObservations,
-			pulpVitality,
+			forecast,
+			observations,
 		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ? ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`, [
 		id,
 		patientId,
-		consultationReason,
-		currentDisease,
-		dateTime,
-		treatment,
-		systolicPresure,
-		diastolicPresure,
-		BPM,
-		fisicConsistency,
-		physicalExamination,
-		intraoralExamination,
-		gumEvaluation,
-		dentalDiagram,
-		childrenDentalDiagram,
-		individualForecast,
-		generalForecast,
-		physicalTest,
-		oclusionExamination,
-		complementaryTest,
-		generalObservations,
-		pulpVitality,
+		dateData.consultationReason,
+		dateData.currentDisease,
+		dateData.treatment,
+		dateData.bifosfonato,
+		dateData.bifosfonadoDescription,
+		dateData.reactionToAnesthesia,
+		dateData.reactionToAnesthesiaDesc,
+		dateData.alergy,
+		dateData.alergyDescription,
+		dateData.cancer,
+		dateData.pregnacy,
+		dateData.ailments,
+		dateData.bloodType,
+		dateData.proneToBleeding,
+		dateData.height,
+		dateData.weight,
+		dateData.complementaryTest,
+		dateData.sys,
+		dateData.dia,
+		dateData.bpm,
+		dateData.temp,
+		dateData.physicalExamination,
+		dateData.intraoralExamination,
+		dateData.gumEvaluation,
+		dateData.dentalDiagram,
+		dateData.childrenDentalDiagram,
+		dateData.forecast,
+		dateData.observations,
 	])
-}
-
-export async function addDateReg(data:t.dateData) {
-	const _res = await execute(`
-		INSER INTO consultations(
-			id,
-			patientId,
-			consultationReason,
-			currentDisease,
-			dateTime,
-			treatment,
-			systolicPresure,
-			diastolicPresure,
-			BPM,
-			fisicConsistency,
-			physicalExamination,
-			intraoralExamination,
-			gumEvaluation,
-			dentalDiagram,
-			childrenDentalDiagram,
-			individualForecast,
-			generalForecast,
-			physicalTest,
-			oclusionExamination,
-			complementaryTest,
-			generalObservations,
-			pulpVitality,
-			pregnacy,
-			reactionToAnesthesia,
-			reactionToAnesthesiaDesc
-		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, )
-	`,[
-		data.dateId,
-		// data.patientId,
-		data.consultationReason,
-		data.currentDisease,
-		data.dateTime,
-		data.treatment,
-		data.systolicPresure,
-		data.diastolicPresure,
-		data.BPM,
-		data.fisicConsistency,
-		data.physicalExamination,
-		data.intraoralExamination,
-		data.gumEvaluation,
-		data.dentalDiagram,
-		data.childrenDentalDiagram,
-		data.individualForecast,
-		data.generalForecast,
-		data.physicalTest,
-		data.oclusionExamination,
-		data.complementaryTest,
-		data.generalObservations,
-		data.pulpVitality,
-		data.pregnacy,
-		data.reactionToAnesthesia,
-		data.reactionToAnesthesiaDesc])
 }
 
 export async function updateDentalDiagram(data: t.dentalDiagram) {
