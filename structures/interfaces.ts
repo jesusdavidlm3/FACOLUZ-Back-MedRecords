@@ -1,3 +1,5 @@
+import * as jsonmodels from "./jsonModels.ts"
+
 export interface loginData{
     identification: string,
     passwordHash: string
@@ -20,9 +22,9 @@ export interface dateData{
     reactionToAnesthesiaDesc: string | null,
     alergy: number,
     alergyDescription: string | null,
-    cancer: JSON,
-    pregnacy: JSON | null,
-    ailments: JSON,
+    cancer: jsonmodels.cancer,
+    pregnacy: jsonmodels.pregnacy | null,
+    ailments: jsonmodels.ailments,
     bloodType: number,
     proneToBleeding: number,
     height: number,
@@ -32,19 +34,11 @@ export interface dateData{
     dia: number,
     bpm: number,
     temp: number,
-    physicalExamination: JSON,
-    intraoralExamination: JSON,
-    gumEvaluation: JSON,
-    dentalDiagram: JSON | null,
-    childrenDentalDiagram: JSON | null,
+    physicalExamination: jsonmodels.physicalExamination,
+    intraoralExamination: jsonmodels.intraoralExamination,
+    gumEvaluation: jsonmodels.gumEvaluation,
+    dentalDiagram: jsonmodels.dentalDiagram | null,
+    childrenDentalDiagram: jsonmodels.childrenDentalDiagram | null,
     forecast: string | null,
     observations: string | null,
-}
-
-export interface dentalDiagram{
-    theeth: number[]
-}
-
-export interface childrenDentalDiagram{
-    theeth: number[]
 }
