@@ -55,8 +55,8 @@ app.get('/api/getDatesList', verification, async(req, res) => {
 
 app.get("/api/getHistory/:patientId", verification, async(req, res) => {
 	try{
-		const tokenData = getTokenInfo(req)
-		const dbResponse = await db.getHistoryById(tokenData.id)
+		const patientId = req.params.patientId
+		const dbResponse = await db.getHistoryById(patientId)
 		console.log(dbResponse)
 	}catch(err){
 		console.log(err)

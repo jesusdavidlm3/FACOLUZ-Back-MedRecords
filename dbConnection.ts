@@ -2,6 +2,7 @@ import mariadb from 'npm:mariadb'
 import * as t from './structures/interfaces.ts'
 import "jsr:@std/dotenv/load";
 import { getAge } from "./functions.ts";
+import { UUID } from "node:crypto";
 
 const db = mariadb.createPool({
 	host: Deno.env.get("BDD_HOST"),
@@ -53,6 +54,9 @@ export async function getDateList(requesterId:number) {
 			d.id AS dateId,
 			d.date,
 			p.name,
+			p.patientCode AS code,
+			p.patientIdentificacion AS identification,
+			p.identificationType as idType,
 			p.lastname,
 			p.id AS patientId
 		FROM dates d JOIN patients p WHERE d.doctorId = ? AND d.status = 'Pendiente'
@@ -60,12 +64,12 @@ export async function getDateList(requesterId:number) {
 	return res
 }
 
-export async function getHistoryById(patientId:number){
+export async function getHistoryById(patientId:UUID){
 	const res = await query(`
 		SELECT * FROM patients
-		LEFT JOIN childHistories ON patients.id = childHistories.patientId
-		LEFT JOIN adultHistories ON patients.id = adultHistories.patientId
-		WHERE patient.id = ?
+		LEFT JOIN childhistories ON patients.id = childhistories.patientId
+		LEFT JOIN adulthistories ON patients.id = adulthistories.patientId
+		WHERE patients.id = ?
 	`, [patientId])
 	return res
 }
