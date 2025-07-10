@@ -1,6 +1,7 @@
 import mariadb from 'npm:mariadb'
 import * as t from './structures/interfaces.ts'
 import "jsr:@std/dotenv/load";
+import { getAge } from "./functions.ts";
 
 const db = mariadb.createPool({
 	host: Deno.env.get("BDD_HOST"),
@@ -47,7 +48,15 @@ export async function login(data: t.loginData){
 }
 
 export async function getDateList(requesterId:number) {
-	const res = await query("SELECT * FROM dates WHERE doctorId = ? AND status = 'Pendiente'", [requesterId])
+	const res = await query(`
+		SELECT
+			d.id AS dateId,
+			d.date,
+			p.name,
+			p.lastname,
+			p.id AS patientId
+		FROM dates d JOIN patients p WHERE d.doctorId = ? AND d.status = 'Pendiente'
+	`, [requesterId])
 	return res
 }
 
@@ -64,7 +73,6 @@ export async function getHistoryById(patientId:number){
 export async function sendDateData(dateData: t.dateData) {
 
 	const id = crypto.randomUUID()
-	const dateId = dateData.dateId //Determinar id del paciente con esto
 
 	const _res = await execute(`
 		INSERT INTO consultations(
@@ -82,7 +90,6 @@ export async function sendDateData(dateData: t.dateData) {
 			cancer,
 			pregnacy,
 			ailments,
-			bloodType,
 			proneToBleeding,
 			height,
 			weight,
@@ -101,7 +108,7 @@ export async function sendDateData(dateData: t.dateData) {
 		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ? ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`, [
 		id,
-		patientId,
+		dateData.patientId,
 		dateData.consultationReason,
 		dateData.currentDisease,
 		dateData.treatment,
@@ -114,7 +121,6 @@ export async function sendDateData(dateData: t.dateData) {
 		dateData.cancer,
 		dateData.pregnacy,
 		dateData.ailments,
-		dateData.bloodType,
 		dateData.proneToBleeding,
 		dateData.height,
 		dateData.weight,
@@ -131,12 +137,26 @@ export async function sendDateData(dateData: t.dateData) {
 		dateData.forecast,
 		dateData.observations,
 	])
-}
 
-export async function updateDentalDiagram(data: t.dentalDiagram) {
-	
-}
+	const firstDateCheck = await query(`SELECT COUNT(*) FROM consultations WHERE patientId = ?`, [dateData.patientId])
 
-export async function updateChildrenDentalDiagram(data: t.childrenDentalDiagram) {
-	
+	if(firstDateCheck == 0){
+		const _patientQuery = await execute(`
+			INSERT INTO patients(bloodtype) VALUES(?) WHERE id = ?
+		`, [dateData.bloodType, dateData.patientId])
+	}
+
+	const birthDate = await query(`SELECT birthDate FROM patients WHERE id = ?`, [dateData.patientId])
+
+	if(getAge(birthDate) < 18){
+		const _childrenQuery = await execute(`
+			INSERT INTO childhistories(
+				height,
+				weight
+			) VALUES(?, ?)
+		`, [
+			dateData.height,
+			dateData.weight
+		])
+	}
 }

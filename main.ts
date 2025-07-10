@@ -3,7 +3,7 @@ import cors from 'npm:cors'
 import jwt from 'npm:jsonwebtoken'
 import * as db from './dbConnection.ts'
 import "jsr:@std/dotenv/load";
-import * as tokenVerification from './tokenVerification.ts'
+import verification, { getTokenInfo } from './tokenVerification.ts'
 
 const port = Deno.env.get("PORT")
 const secret = Deno.env.get("SECRET")
@@ -25,7 +25,7 @@ app.post('/api/login', async (req, res) => {
 			res.status(401).send('Contraseña Incorrecta')
 		}else if(dbResponse[0].active == false){
 			res.status(404).send('Este usuario se encuentra inactivo')
-		}else if((dbResponse[0].type != 1) && (dbResponse[0].type != 2)){
+		}else if(dbResponse[0].type != 2){
 			res.status(401).send('Usted no es un profesor o alumno')
 		}else{
 			const token = jwt.sign({
@@ -42,9 +42,9 @@ app.post('/api/login', async (req, res) => {
 	}
 })
 
-app.get('/api/getDatesList',tokenVerification.forTeachOrStud , async(req, res) => {
+app.get('/api/getDatesList', verification, async(req, res) => {
 	try{
-		const tokenData = tokenVerification.getTokenInfo(req)
+		const tokenData = getTokenInfo(req)
 		const dbResponse = await db.getDateList(tokenData.id)
 		res.status(200).send(dbResponse)
 	}catch(err){
@@ -53,9 +53,9 @@ app.get('/api/getDatesList',tokenVerification.forTeachOrStud , async(req, res) =
 	}
 })
 
-app.get("/api/getHistory/:patientId", tokenVerification.forTeachOrStud, async(req, res) => {
+app.get("/api/getHistory/:patientId", verification, async(req, res) => {
 	try{
-		const tokenData = tokenVerification.getTokenInfo(req)
+		const tokenData = getTokenInfo(req)
 		const dbResponse = await db.getHistoryById(tokenData.id)
 		console.log(dbResponse)
 	}catch(err){
@@ -64,17 +64,17 @@ app.get("/api/getHistory/:patientId", tokenVerification.forTeachOrStud, async(re
 	}
 })
 
-app.post('/api/finishDate', tokenVerification.forTeachOrStud, async(req, res) => {
-	try{
-		const dbResponse = await db.addDateReg(req.body)
-		console.log(dbResponse)
-		// ejecutar tambien las querys para actualizar datos y almacenar odontograma y otros datos cambiantes parcialmente
-		res.status(200).send("Registrado")
-	}catch(err){
-		console.log(err)
-		res.status(500).send("error del servidor")
-	}
-})
+// app.post('/api/finishDate', verification, async(req, res) => {
+// 	try{
+// 		const dbResponse = await db.addDateReg(req.body)
+// 		console.log(dbResponse)
+// 		// ejecutar tambien las querys para actualizar datos y almacenar odontograma y otros datos cambiantes parcialmente
+// 		res.status(200).send("Registrado")
+// 	}catch(err){
+// 		console.log(err)
+// 		res.status(500).send("error del servidor")
+// 	}
+// })
 
 app.listen(port, "0.0.0.0", () => {
 	console.log(`Puerto: ${port}`)

@@ -12,7 +12,7 @@ export interface scheduleDate{
 }
 
 export interface dateData{
-    dateId: string,
+    patientId: string,
     consultationReason: string,
     currentDisease: string | null,
     treatment: string | null,
