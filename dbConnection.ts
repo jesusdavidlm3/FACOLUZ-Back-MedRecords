@@ -59,9 +59,11 @@ export async function getDateList(requesterId:number) {
 			p.identificationType as idType,
 			p.lastname,
 			p.id AS patientId
-		FROM dates d JOIN patients p WHERE d.doctorId = ? AND d.status = 'Pendiente'
+		FROM dates d JOIN patients p ON d.patientId = p.id WHERE d.doctorId = ? AND d.status = 'Pendiente'
 	`, [requesterId])
+	console.log(res)
 	return res
+
 }
 
 export async function getHistoryById(patientId:UUID){
