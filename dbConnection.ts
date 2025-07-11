@@ -65,9 +65,9 @@ export async function getDateList(requesterId:number) {
 }
 
 export async function getHistoryById(patientId:UUID){
-	const res = await query(`
+	const history = await query(`
 		SELECT
-			p.*
+			p.*,
 			a.currentWorking,
 			a.workType,
 			a.familyBurden,
@@ -87,9 +87,14 @@ export async function getHistoryById(patientId:UUID){
 		FROM patients p
 		LEFT JOIN childhistories c ON p.id = c.patientId
 		LEFT JOIN adulthistories a ON p.id = a.patientId
-		WHERE patients.id = ?
+		WHERE p.id = ?
 	`, [patientId])
-	console.log(res)
+
+	const consultationsList = await query(`
+		SELECT id FROM consultations WHERE patientId = ?
+	`, [patientId])
+
+	const res = {...history[0], consultationsList: consultationsList, firstDate: consultationsList.length != 0 ? false : true}
 	return res
 }
 
