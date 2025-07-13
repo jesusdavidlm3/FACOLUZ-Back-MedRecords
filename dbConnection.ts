@@ -93,7 +93,7 @@ export async function getHistoryById(patientId:UUID){
 	`, [patientId])
 
 	const consultationsList = await query(`
-		SELECT id FROM consultations WHERE patientId = ?
+		SELECT id, dateTime FROM consultations WHERE patientId = ?
 	`, [patientId])
 
 	const res = {...history[0], consultationsList: consultationsList, firstDate: consultationsList.length != 0 ? false : true}
