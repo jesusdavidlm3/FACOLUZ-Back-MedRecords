@@ -100,8 +100,8 @@ export async function getHistoryById(patientId:UUID){
 	return res
 }
 
-export async function sendDateData(dateData: t.dateData) {
-
+export async function setDateData(dateData: t.dateData) {
+	console.log(dateData)
 	const id = crypto.randomUUID()
 
 	const _res = await execute(`
@@ -111,22 +111,13 @@ export async function sendDateData(dateData: t.dateData) {
 			consultationReason,
 			currentDisease,
 			treatment,
-			bifosfonato,
-			bifosfonadoDescription,
 			reactionToAnesthesia,
 			reactionToAnesthesiaDesc,
-			alergy,
-			alergyDescription,
-			cancer,
 			pregnacy,
-			ailments,
-			proneToBleeding,
-			height,
-			weight,
 			complementaryTest,
-			sys,
-			dia,
-			bpm,
+			systolicPresure,
+			diastolicPresure,
+			BPM,
 			temp,
 			physicalExamination,
 			intraoralExamination,
@@ -134,26 +125,17 @@ export async function sendDateData(dateData: t.dateData) {
 			dentalDiagram,
 			childrenDentalDiagram,
 			forecast,
-			observations,
-		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ? ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			observations
+		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`, [
 		id,
 		dateData.patientId,
 		dateData.consultationReason,
 		dateData.currentDisease,
 		dateData.treatment,
-		dateData.bifosfonato,
-		dateData.bifosfonadoDescription,
 		dateData.reactionToAnesthesia,
 		dateData.reactionToAnesthesiaDesc,
-		dateData.alergy,
-		dateData.alergyDescription,
-		dateData.cancer,
 		dateData.pregnacy,
-		dateData.ailments,
-		dateData.proneToBleeding,
-		dateData.height,
-		dateData.weight,
 		dateData.complementaryTest,
 		dateData.sys,
 		dateData.dia,
@@ -165,28 +147,40 @@ export async function sendDateData(dateData: t.dateData) {
 		dateData.dentalDiagram,
 		dateData.childrenDentalDiagram,
 		dateData.forecast,
-		dateData.observations,
+		dateData.observations
 	])
 
 	const firstDateCheck = await query(`SELECT COUNT(*) FROM consultations WHERE patientId = ?`, [dateData.patientId])
 
 	if(firstDateCheck == 0){
 		const _patientQuery = await execute(`
-			INSERT INTO patients(bloodtype) VALUES(?) WHERE id = ?
-		`, [dateData.bloodType, dateData.patientId])
+			UPDATE patients SET bloodType = ?, bifosfonato = ?, bifosfonadoDescription = ?, alergy = ?, alergyDescription = ?, cancer = ?, ailments = ?, proneToBleeding = ? WHERE id = ?
+		`, [
+			dateData.bloodType, dateData.patientId,
+			dateData.bifosfonato,
+			dateData.bifosfonadoDescription,
+			dateData.alergy,
+			dateData.alergyDescription,
+			dateData.cancer,
+			dateData.ailments,
+			dateData.proneToBleeding
+		])
 	}
 
 	const birthDate = await query(`SELECT birthDate FROM patients WHERE id = ?`, [dateData.patientId])
 
 	if(getAge(birthDate) < 18){
 		const _childrenQuery = await execute(`
-			INSERT INTO childhistories(
-				height,
-				weight
-			) VALUES(?, ?)
+			UPDATE childhistories SET
+				height = ?,
+				weight = ?
+			WHERE patientId = ?
 		`, [
 			dateData.height,
-			dateData.weight
+			dateData.weight,
+			dateData.patientId
 		])
 	}
+
+	return {success: true}
 }

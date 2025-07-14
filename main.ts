@@ -65,6 +65,17 @@ app.get("/api/getHistory/:patientId", verification, async(req, res) => {
 	}
 })
 
+app.post('/api/setDateData', verification, async(req, res) => {
+	try{
+		const dbResponse = await db.setDateData(req.body)
+		console.log(dbResponse)
+		res.status(200).send("Registrado")
+	}catch(err){
+		console.log(err)
+		res.status(500).send("error del servidor")
+	}
+})
+
 // app.post('/api/finishDate', verification, async(req, res) => {
 // 	try{
 // 		const dbResponse = await db.addDateReg(req.body)
