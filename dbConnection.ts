@@ -104,6 +104,25 @@ export async function setDateData(dateData: t.dateData) {
 	console.log(dateData)
 	const id = crypto.randomUUID()
 
+	const firstDateCheck = await query(`SELECT COUNT(*) FROM consultations WHERE patientId = ?`, [dateData.patientId])
+	console.log(firstDateCheck)
+
+	if(Number(firstDateCheck[0]['COUNT(*)']) == 0){
+		const _patientQuery = await execute(`
+			UPDATE patients SET bloodType = ?, bifosfonato = ?, bifosfonadoDescription = ?, alergy = ?, alergyDescription = ?, cancer = ?, ailments = ?, proneToBleeding = ? WHERE id = ?
+		`, [
+			dateData.bloodType, 
+			dateData.bifosfonato,
+			dateData.bifosfonadoDescription,
+			dateData.alergy,
+			dateData.alergyDescription,
+			dateData.cancer,
+			dateData.ailments,
+			dateData.proneToBleeding,
+			dateData.patientId
+		])
+	}
+
 	const _res = await execute(`
 		INSERT INTO consultations(
 			id,
@@ -114,7 +133,7 @@ export async function setDateData(dateData: t.dateData) {
 			reactionToAnesthesia,
 			reactionToAnesthesiaDesc,
 			pregnacy,
-			complementaryTest,
+			complementaryTests,
 			systolicPresure,
 			diastolicPresure,
 			BPM,
@@ -150,26 +169,10 @@ export async function setDateData(dateData: t.dateData) {
 		dateData.observations
 	])
 
-	const firstDateCheck = await query(`SELECT COUNT(*) FROM consultations WHERE patientId = ?`, [dateData.patientId])
 
-	if(firstDateCheck == 0){
-		const _patientQuery = await execute(`
-			UPDATE patients SET bloodType = ?, bifosfonato = ?, bifosfonadoDescription = ?, alergy = ?, alergyDescription = ?, cancer = ?, ailments = ?, proneToBleeding = ? WHERE id = ?
-		`, [
-			dateData.bloodType, dateData.patientId,
-			dateData.bifosfonato,
-			dateData.bifosfonadoDescription,
-			dateData.alergy,
-			dateData.alergyDescription,
-			dateData.cancer,
-			dateData.ailments,
-			dateData.proneToBleeding
-		])
-	}
-
-	const birthDate = await query(`SELECT birthDate FROM patients WHERE id = ?`, [dateData.patientId])
-
-	if(getAge(birthDate) < 18){
+	const ageQuery = await query(`SELECT birthDate FROM patients WHERE id = ?`, [dateData.patientId])
+	
+	if(getAge(new Date(ageQuery[0].birthDate)) < 18){
 		const _childrenQuery = await execute(`
 			UPDATE childhistories SET
 				height = ?,
