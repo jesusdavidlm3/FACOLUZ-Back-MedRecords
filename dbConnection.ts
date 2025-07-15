@@ -1,7 +1,7 @@
 import mariadb from 'npm:mariadb'
 import * as t from './structures/interfaces.ts'
 import "jsr:@std/dotenv/load";
-import { getAge } from "./functions.ts";
+import { dateToDb, getAge } from "./functions.ts";
 import { UUID } from "node:crypto";
 
 const db = mariadb.createPool({
@@ -97,23 +97,24 @@ export async function getHistoryById(patientId:UUID){
 	`, [patientId])
 
 	const res = {...history[0], consultationsList: consultationsList, firstDate: consultationsList.length != 0 ? false : true}
+	console.log(res)
 	return res
 }
 
 export async function setDateData(dateData: t.dateData) {
 	console.log(dateData)
 	const id = crypto.randomUUID()
+	const dateTime = new Date()
 
 	const firstDateCheck = await query(`SELECT COUNT(*) FROM consultations WHERE patientId = ?`, [dateData.patientId])
-	console.log(firstDateCheck)
 
 	if(Number(firstDateCheck[0]['COUNT(*)']) == 0){
 		const _patientQuery = await execute(`
-			UPDATE patients SET bloodType = ?, bifosfonato = ?, bifosfonadoDescription = ?, alergy = ?, alergyDescription = ?, cancer = ?, ailments = ?, proneToBleeding = ? WHERE id = ?
+			UPDATE patients SET bloodType = ?, bifosfonato = ?, bifosfonatoDescription = ?, alergy = ?, alergyDescription = ?, cancer = ?, ailments = ?, proneToBleeding = ? WHERE id = ?
 		`, [
 			dateData.bloodType, 
 			dateData.bifosfonato,
-			dateData.bifosfonadoDescription,
+			dateData.bifosfonatoDescription,
 			dateData.alergy,
 			dateData.alergyDescription,
 			dateData.cancer,
@@ -127,6 +128,7 @@ export async function setDateData(dateData: t.dateData) {
 		INSERT INTO consultations(
 			id,
 			patientId,
+			dateTime,
 			consultationReason,
 			currentDisease,
 			treatment,
@@ -145,10 +147,11 @@ export async function setDateData(dateData: t.dateData) {
 			childrenDentalDiagram,
 			forecast,
 			observations
-		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`, [
 		id,
 		dateData.patientId,
+		dateToDb(dateTime),
 		dateData.consultationReason,
 		dateData.currentDisease,
 		dateData.treatment,

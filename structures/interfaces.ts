@@ -17,7 +17,7 @@ export interface dateData{
     currentDisease: string | null,
     treatment: string | null,
     bifosfonato: number,
-    bifosfonadoDescription: string | null,
+    bifosfonatoDescription: string | null,
     reactionToAnesthesia: number,
     reactionToAnesthesiaDesc: string | null,
     alergy: number,

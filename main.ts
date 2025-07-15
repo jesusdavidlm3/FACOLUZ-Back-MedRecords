@@ -57,7 +57,6 @@ app.get("/api/getHistory/:patientId", verification, async(req, res) => {
 	try{
 		const patientId = req.params.patientId
 		const dbResponse = await db.getHistoryById(patientId)
-		console.log(dbResponse)
 		res.status(200).send(dbResponse)
 	}catch(err){
 		console.log(err)
