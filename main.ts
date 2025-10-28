@@ -42,10 +42,12 @@ app.post('/api/login', async (req, res) => {
 	}
 })
 
-app.get('/api/getDatesList', verification, async(req, res) => {
+app.get('/api/getDatesList/:page', verification, async(req, res) => {
+	const page = Number(req.data.page)
+
 	try{
 		const tokenData = getTokenInfo(req)
-		const dbResponse = await db.getDateList(tokenData.id)
+		const dbResponse = await db.getDateList(tokenData.id, page)
 		res.status(200).send(dbResponse)
 	}catch(err){
 		console.log(err)
@@ -53,10 +55,12 @@ app.get('/api/getDatesList', verification, async(req, res) => {
 	}
 })
 
-app.get("/api/getHistory/:patientId", verification, async(req, res) => {
+app.get("/api/getHistory/:patientId/:page", verification, async(req, res) => {
+	const page = Number(req.params.page)
+
 	try{
 		const patientId = req.params.patientId
-		const dbResponse = await db.getHistoryById(patientId)
+		const dbResponse = await db.getHistoryById(patientId, page)
 		res.status(200).send(dbResponse)
 	}catch(err){
 		console.log(err)

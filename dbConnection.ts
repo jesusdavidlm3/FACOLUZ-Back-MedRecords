@@ -48,7 +48,7 @@ export async function login(data: t.loginData){
 	return res
 }
 
-export async function getDateList(requesterId:number) {
+export async function getDateList(requesterId:number, page: number) {
 	const res = await query(`
 		SELECT
 			d.id AS dateId,
@@ -59,14 +59,16 @@ export async function getDateList(requesterId:number) {
 			p.identificationType as idType,
 			p.lastname,
 			p.id AS patientId
-		FROM dates d JOIN patients p ON d.patientId = p.id WHERE d.doctorId = ? AND d.status = 'Pendiente'
-	`, [requesterId])
+		FROM dates d JOIN patients p ON d.patientId = p.id
+		WHERE d.doctorId = ? AND d.status = 'Pendiente'
+		LIMIT 10 OFFSET ?
+	`, [requesterId, (page-1)*10])
 	console.log(res)
 	return res
 
 }
 
-export async function getHistoryById(patientId:UUID){
+export async function getHistoryById(patientId:UUID, page: number){
 	const history = await query(`
 		SELECT
 			p.*,
@@ -93,8 +95,8 @@ export async function getHistoryById(patientId:UUID){
 	`, [patientId])
 
 	const consultationsList = await query(`
-		SELECT id, dateTime FROM consultations WHERE patientId = ?
-	`, [patientId])
+		SELECT id, dateTime FROM consultations WHERE patientId = ? LIMIT 10 OFFSET ?
+	`, [patientId, (page-1)*10])
 
 	const res = {...history[0], consultationsList: consultationsList, firstDate: consultationsList.length != 0 ? false : true}
 	console.log(res)
